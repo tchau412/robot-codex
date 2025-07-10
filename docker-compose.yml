@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: robot
+      POSTGRES_PASSWORD: robot
+      POSTGRES_DB: robot
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: postgres://robot:robot@postgres:5432/robot
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
